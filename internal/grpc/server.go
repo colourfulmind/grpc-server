@@ -1,18 +1,20 @@
 package grpcserver
 
 import (
+	"cmd/grpc/main.go/internal/services"
 	tr "cmd/grpc/main.go/protos/gen/go/transmitter"
 	"context"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-type Data interface {
-	GenerateData(ctx context.Context) (string, float64)
+type Transmitter interface {
+	Transmit(ctx context.Context, req *tr.TransmitRequest) (*tr.TransmitResponse, error)
 }
 
 type Server struct {
 	tr.UnimplementedTransmitterServer
+	tr Transmitter
 }
 
 func Register(gRPC *grpc.Server) {
@@ -20,12 +22,11 @@ func Register(gRPC *grpc.Server) {
 }
 
 func (s *Server) Transmit(ctx context.Context, req *tr.TransmitRequest) (*tr.TransmitResponse, error) {
-	//d := services.New()
-	//sessionID, frequency := d.GenerateData(ctx)
-	//
+	d := services.New()
+	sessionID, frequency := d.GenerateData(ctx)
 	return &tr.TransmitResponse{
-		//SessionId: sessionID,
-		//Frequency: frequency,
+		SessionId: sessionID,
+		Frequency: frequency,
 		Timestamp: timestamppb.Now(),
 	}, nil
 }

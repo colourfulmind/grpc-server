@@ -8,7 +8,7 @@ run: build
 
 .PHONY: clean
 clean:
-	rm team00
+	rm -rf team00
 
 .PHONY: generate_files
 generate_files:
