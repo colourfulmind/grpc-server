@@ -8,13 +8,8 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-type Transmitter interface {
-	Transmit(ctx context.Context, req *tr.TransmitRequest) (*tr.TransmitResponse, error)
-}
-
 type Server struct {
 	tr.UnimplementedTransmitterServer
-	tr Transmitter
 }
 
 func Register(gRPC *grpc.Server) {
