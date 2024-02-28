@@ -11,6 +11,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -22,7 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type TransmitterClient interface {
-	Transmit(ctx context.Context, in *TransmitRequest, opts ...grpc.CallOption) (*TransmitResponse, error)
+	Transmit(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*TransmitResponse, error)
 }
 
 type transmitterClient struct {
@@ -33,7 +34,7 @@ func NewTransmitterClient(cc grpc.ClientConnInterface) TransmitterClient {
 	return &transmitterClient{cc}
 }
 
-func (c *transmitterClient) Transmit(ctx context.Context, in *TransmitRequest, opts ...grpc.CallOption) (*TransmitResponse, error) {
+func (c *transmitterClient) Transmit(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*TransmitResponse, error) {
 	out := new(TransmitResponse)
 	err := c.cc.Invoke(ctx, "/pkg.Transmitter/Transmit", in, out, opts...)
 	if err != nil {
@@ -46,7 +47,7 @@ func (c *transmitterClient) Transmit(ctx context.Context, in *TransmitRequest, o
 // All implementations must embed UnimplementedTransmitterServer
 // for forward compatibility
 type TransmitterServer interface {
-	Transmit(context.Context, *TransmitRequest) (*TransmitResponse, error)
+	Transmit(context.Context, *emptypb.Empty) (*TransmitResponse, error)
 	mustEmbedUnimplementedTransmitterServer()
 }
 
@@ -54,7 +55,7 @@ type TransmitterServer interface {
 type UnimplementedTransmitterServer struct {
 }
 
-func (UnimplementedTransmitterServer) Transmit(context.Context, *TransmitRequest) (*TransmitResponse, error) {
+func (UnimplementedTransmitterServer) Transmit(context.Context, *emptypb.Empty) (*TransmitResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Transmit not implemented")
 }
 func (UnimplementedTransmitterServer) mustEmbedUnimplementedTransmitterServer() {}
@@ -71,7 +72,7 @@ func RegisterTransmitterServer(s grpc.ServiceRegistrar, srv TransmitterServer) {
 }
 
 func _Transmitter_Transmit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(TransmitRequest)
+	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -83,7 +84,7 @@ func _Transmitter_Transmit_Handler(srv interface{}, ctx context.Context, dec fun
 		FullMethod: "/pkg.Transmitter/Transmit",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TransmitterServer).Transmit(ctx, req.(*TransmitRequest))
+		return srv.(TransmitterServer).Transmit(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }

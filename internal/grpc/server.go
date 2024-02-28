@@ -5,6 +5,7 @@ import (
 	tr "cmd/grpc/main.go/protos/gen/go/transmitter"
 	"context"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -16,9 +17,9 @@ func Register(gRPC *grpc.Server) {
 	tr.RegisterTransmitterServer(gRPC, &Server{})
 }
 
-func (s *Server) Transmit(ctx context.Context, req *tr.TransmitRequest) (*tr.TransmitResponse, error) {
+func (s *Server) Transmit(ctx context.Context, _ *emptypb.Empty) (*tr.TransmitResponse, error) {
 	d := services.New()
-	sessionID, frequency := d.GenerateData(ctx)
+	sessionID, frequency := d.GenerateData()
 	return &tr.TransmitResponse{
 		SessionId: sessionID,
 		Frequency: frequency,

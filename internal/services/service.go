@@ -1,7 +1,6 @@
 package services
 
 import (
-	"context"
 	"github.com/google/uuid"
 	"math/rand"
 	"time"
@@ -18,14 +17,14 @@ type Data struct {
 }
 
 type DataGenerator interface {
-	GenerateData(ctx context.Context) (string, float64)
+	GenerateData() (string, float64)
 }
 
 func New() *Data {
 	return &Data{}
 }
 
-func (d *Data) GenerateData(ctx context.Context) (string, float64) {
+func (d *Data) GenerateData() (string, float64) {
 	mean := meanMin + rand.Float64()*(meanMax-meanMin)
 	std := sdMin + rand.Float64()*(sdMax-sdMin)
 	frequency := rand.New(rand.NewSource(time.Now().UnixNano())).NormFloat64()*std + mean

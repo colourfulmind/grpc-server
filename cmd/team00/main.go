@@ -24,7 +24,7 @@ func main() {
 	log.Info("starting application", slog.Any("config", cfg))
 
 	// initialize app
-	application := app.New(log, cfg.GRPC.Port, cfg.StoragePath, cfg.TokenTTL)
+	application := app.New(log, cfg.GRPC.Port)
 	go application.GRPCSrv.MustRun()
 
 	// graceful shutdown
