@@ -1,7 +1,7 @@
 package app
 
 import (
-	grpcapp "cmd/grpc/main.go/internal/app/grpc"
+	grpcapp "grpc/internal/app/grpc"
 	"log/slog"
 )
 

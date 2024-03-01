@@ -23,7 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type TransmitterClient interface {
-	Transmit(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*TransmitResponse, error)
+	Transmit(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (Transmitter_TransmitClient, error)
 }
 
 type transmitterClient struct {
@@ -34,20 +34,43 @@ func NewTransmitterClient(cc grpc.ClientConnInterface) TransmitterClient {
 	return &transmitterClient{cc}
 }
 
-func (c *transmitterClient) Transmit(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*TransmitResponse, error) {
-	out := new(TransmitResponse)
-	err := c.cc.Invoke(ctx, "/pkg.Transmitter/Transmit", in, out, opts...)
+func (c *transmitterClient) Transmit(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (Transmitter_TransmitClient, error) {
+	stream, err := c.cc.NewStream(ctx, &Transmitter_ServiceDesc.Streams[0], "/pkg.Transmitter/Transmit", opts...)
 	if err != nil {
 		return nil, err
 	}
-	return out, nil
+	x := &transmitterTransmitClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type Transmitter_TransmitClient interface {
+	Recv() (*TransmitResponse, error)
+	grpc.ClientStream
+}
+
+type transmitterTransmitClient struct {
+	grpc.ClientStream
+}
+
+func (x *transmitterTransmitClient) Recv() (*TransmitResponse, error) {
+	m := new(TransmitResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
 }
 
 // TransmitterServer is the server API for Transmitter service.
 // All implementations must embed UnimplementedTransmitterServer
 // for forward compatibility
 type TransmitterServer interface {
-	Transmit(context.Context, *emptypb.Empty) (*TransmitResponse, error)
+	Transmit(*emptypb.Empty, Transmitter_TransmitServer) error
 	mustEmbedUnimplementedTransmitterServer()
 }
 
@@ -55,8 +78,8 @@ type TransmitterServer interface {
 type UnimplementedTransmitterServer struct {
 }
 
-func (UnimplementedTransmitterServer) Transmit(context.Context, *emptypb.Empty) (*TransmitResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Transmit not implemented")
+func (UnimplementedTransmitterServer) Transmit(*emptypb.Empty, Transmitter_TransmitServer) error {
+	return status.Errorf(codes.Unimplemented, "method Transmit not implemented")
 }
 func (UnimplementedTransmitterServer) mustEmbedUnimplementedTransmitterServer() {}
 
@@ -71,22 +94,25 @@ func RegisterTransmitterServer(s grpc.ServiceRegistrar, srv TransmitterServer) {
 	s.RegisterService(&Transmitter_ServiceDesc, srv)
 }
 
-func _Transmitter_Transmit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(emptypb.Empty)
-	if err := dec(in); err != nil {
-		return nil, err
+func _Transmitter_Transmit_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(emptypb.Empty)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
 	}
-	if interceptor == nil {
-		return srv.(TransmitterServer).Transmit(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/pkg.Transmitter/Transmit",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TransmitterServer).Transmit(ctx, req.(*emptypb.Empty))
-	}
-	return interceptor(ctx, in, info, handler)
+	return srv.(TransmitterServer).Transmit(m, &transmitterTransmitServer{stream})
+}
+
+type Transmitter_TransmitServer interface {
+	Send(*TransmitResponse) error
+	grpc.ServerStream
+}
+
+type transmitterTransmitServer struct {
+	grpc.ServerStream
+}
+
+func (x *transmitterTransmitServer) Send(m *TransmitResponse) error {
+	return x.ServerStream.SendMsg(m)
 }
 
 // Transmitter_ServiceDesc is the grpc.ServiceDesc for Transmitter service.
@@ -95,12 +121,13 @@ func _Transmitter_Transmit_Handler(srv interface{}, ctx context.Context, dec fun
 var Transmitter_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "pkg.Transmitter",
 	HandlerType: (*TransmitterServer)(nil),
-	Methods: []grpc.MethodDesc{
+	Methods:     []grpc.MethodDesc{},
+	Streams: []grpc.StreamDesc{
 		{
-			MethodName: "Transmit",
-			Handler:    _Transmitter_Transmit_Handler,
+			StreamName:    "Transmit",
+			Handler:       _Transmitter_Transmit_Handler,
+			ServerStreams: true,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
 	Metadata: "transmitter/transmitter.proto",
 }

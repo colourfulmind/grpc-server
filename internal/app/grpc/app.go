@@ -1,9 +1,9 @@
 package grpcapp
 
 import (
-	grpcserver "cmd/grpc/main.go/internal/grpc"
 	"fmt"
 	"google.golang.org/grpc"
+	grpcserver "grpc/internal/grpc"
 	"log/slog"
 	"net"
 )
@@ -31,7 +31,7 @@ func (a *App) MustRun() {
 }
 
 func (a *App) Run() error {
-	const op = "grpcapp.Run"
+	const op = "app.grpc.Run"
 	log := a.log.With(slog.String("op", op), slog.Int("port", a.port))
 
 	l, err := net.Listen("tcp", fmt.Sprintf(":%d", a.port))
@@ -49,7 +49,7 @@ func (a *App) Run() error {
 }
 
 func (a *App) Stop() {
-	const op = "grpcapp.Stop"
+	const op = "app.grpc.Stop"
 
 	a.log.With(slog.String("op", op)).Info(
 		"stopping gRPC server", slog.Int("port", a.port))

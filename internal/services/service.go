@@ -14,19 +14,21 @@ const (
 )
 
 type Data struct {
-}
-
-type DataGenerator interface {
-	GenerateData() (string, float64)
+	SessionID string
+	Mean      float64
+	STD       float64
 }
 
 func New() *Data {
-	return &Data{}
-}
-
-func (d *Data) GenerateData() (string, float64) {
 	mean := meanMin + rand.Float64()*(meanMax-meanMin)
 	std := sdMin + rand.Float64()*(sdMax-sdMin)
-	frequency := rand.New(rand.NewSource(time.Now().UnixNano())).NormFloat64()*std + mean
-	return uuid.New().String(), frequency
+	return &Data{
+		SessionID: uuid.New().String(),
+		Mean:      mean,
+		STD:       std,
+	}
+}
+
+func (d *Data) GenerateFrequency() float64 {
+	return rand.New(rand.NewSource(time.Now().UnixNano())).NormFloat64()*d.STD + d.Mean
 }

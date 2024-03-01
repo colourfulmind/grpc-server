@@ -1,8 +1,9 @@
 package main
 
 import (
-	"cmd/grpc/main.go/internal/app"
-	"cmd/grpc/main.go/internal/config"
+	"grpc/internal/app"
+	"grpc/internal/config"
+	"grpc/internal/lib/logger/handlers/slogpretty"
 	"log/slog"
 	"os"
 	"os/signal"
@@ -41,11 +42,12 @@ func SetupLogger(env string) *slog.Logger {
 
 	switch env {
 	case EnvLocal:
-		log = slog.New(
-			slog.NewTextHandler(
-				os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug},
-			),
-		)
+		//log = slog.New(
+		//	slog.NewTextHandler(
+		//		os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug},
+		//	),
+		//)
+		log = SetupPrettySlog()
 	case EnvDev:
 		log = slog.New(
 			slog.NewJSONHandler(
@@ -61,4 +63,14 @@ func SetupLogger(env string) *slog.Logger {
 	}
 
 	return log
+}
+
+func SetupPrettySlog() *slog.Logger {
+	opts := slogpretty.PrettyHandlerOptions{
+		SlogOpts: &slog.HandlerOptions{
+			Level: slog.LevelDebug,
+		},
+	}
+	handler := opts.NewPrettyHandler(os.Stdout)
+	return slog.New(handler)
 }

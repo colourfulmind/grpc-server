@@ -8,7 +8,7 @@ import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
 
 service Transmitter {
-  rpc Transmit(google.protobuf.Empty) returns (TransmitResponse) {}
+  rpc Transmit(google.protobuf.Empty) returns (stream TransmitResponse) {}
 }
 
 message TransmitResponse {
