@@ -16,7 +16,7 @@ type App struct {
 
 func New(log *slog.Logger, port int) *App {
 	gRPCServer := grpc.NewServer()
-	grpcserver.Register(gRPCServer)
+	grpcserver.Register(gRPCServer, log)
 	return &App{
 		log:        log,
 		gRPCServer: gRPCServer,
@@ -39,7 +39,7 @@ func (a *App) Run() error {
 		return fmt.Errorf("%s: %w", op, err)
 	}
 
-	log.Info("gRPC server is running", slog.String("addr", l.Addr().String()))
+	log.Info("gRPC client is running", slog.String("addr", l.Addr().String()))
 
 	if err = a.gRPCServer.Serve(l); err != nil {
 		return fmt.Errorf("%s: %w", op, err)

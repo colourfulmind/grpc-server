@@ -6,6 +6,7 @@ import (
 	"io"
 	stdLog "log"
 	"log/slog"
+	"time"
 
 	"github.com/fatih/color"
 )
@@ -68,7 +69,7 @@ func (h *PrettyHandler) Handle(_ context.Context, r slog.Record) error {
 		}
 	}
 
-	timeStr := r.Time.Format("[15:05:05.000]")
+	timeStr := r.Time.Format(time.TimeOnly)
 	msg := color.CyanString(r.Message)
 
 	h.l.Println(
@@ -90,7 +91,6 @@ func (h *PrettyHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 }
 
 func (h *PrettyHandler) WithGroup(name string) slog.Handler {
-	// TODO: implement
 	return &PrettyHandler{
 		Handler: h.Handler.WithGroup(name),
 		l:       h.l,

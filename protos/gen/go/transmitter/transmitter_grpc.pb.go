@@ -4,7 +4,7 @@
 // - protoc             v4.25.3
 // source: transmitter/transmitter.proto
 
-package team00
+package receiver
 
 import (
 	context "context"

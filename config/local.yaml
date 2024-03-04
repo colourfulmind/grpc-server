@@ -1,6 +1,0 @@
-env: "local"
-token_ttl: 1h
-storage_path: "./storage/transmitter.db"
-grpc:
-  port: 44044
-  timeout: 10h

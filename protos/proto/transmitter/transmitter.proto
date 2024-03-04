@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package pkg;
 
-option go_package = "team00.v1;team00";
+option go_package = "receiver.v1;receiver";
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
